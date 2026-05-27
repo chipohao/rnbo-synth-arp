@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RNBO Synth ARP</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-label="instrument status">
+        <div>
+          <p class="eyebrow">RNBO Web Synth</p>
+          <h1>Synth ARP</h1>
+        </div>
+        <div class="status-cluster">
+          <span class="engine-pill" id="engineInfo">Audio engine --</span>
+          <span class="status-pill" id="deviceStatus">Not loaded</span>
+          <button class="primary-action" id="startButton" type="button">Start Audio</button>
+        </div>
+      </section>
+
+      <p class="runtime-message" id="runtimeMessage" role="status"></p>
+
+      <section class="performance-panel" aria-label="performance controls">
+        <div class="mode-tabs-row">
+          <div class="mode-tabs" role="tablist" aria-label="performance mode">
+            <button class="mode-tab active" id="keyboardTab" type="button" role="tab" aria-selected="true" aria-controls="keyboardMode">Keyboard</button>
+            <button class="mode-tab" id="seqTab" type="button" role="tab" aria-selected="false" aria-controls="sequencerMode">Sequencer</button>
+          </div>
+          <div class="waveform-switch" id="waveformSwitch" aria-label="waveform selector"></div>
+          <label class="topbar-gain">
+            <span>Gain</span>
+            <input id="gain" type="range" min="0" max="1" step="0.001" value="0.4">
+            <output id="gainValue">0.40</output>
+          </label>
+        </div>
+
+        <div class="meter-panel">
+          <canvas id="scopeCanvas" width="720" height="180" aria-label="audio waveform monitor"></canvas>
+        </div>
+
+        <div class="mode-panel active" id="keyboardMode" role="tabpanel" aria-labelledby="keyboardTab">
+          <div class="keyboard" id="keyboard" aria-label="screen keyboard"></div>
+        </div>
+
+        <div class="mode-panel" id="sequencerMode" role="tabpanel" aria-labelledby="seqTab" hidden>
+          <div class="sequencer-transport">
+            <button class="seq-play" id="seqPlay" type="button">Play</button>
+            <button class="seq-stop" id="seqStop" type="button" disabled>Stop</button>
+            <label class="bpm-control">
+              <span>BPM</span>
+              <input id="seqBpm" type="range" min="60" max="240" step="1" value="120">
+              <output id="seqBpmValue">120</output>
+            </label>
+            <div class="seq-tools">
+              <label class="scale-control">
+                <span>Scale</span>
+                <select id="seqScale">
+                  <option value="chromatic">Chromatic</option>
+                  <option value="major">Major</option>
+                  <option value="minor">Minor</option>
+                  <option value="dorian" selected>Dorian</option>
+                  <option value="phrygian">Phrygian</option>
+                  <option value="lydian">Lydian</option>
+                  <option value="mixolydian">Mixolydian</option>
+                  <option value="locrian">Locrian</option>
+                  <option value="pentatonic">Pentatonic</option>
+                  <option value="minpent">Min Pent</option>
+                  <option value="blues">Blues</option>
+                  <option value="wholetone">Whole Tone</option>
+                  <option value="diminished">Diminished</option>
+                </select>
+              </label>
+              <label class="scale-control">
+                <span>Root</span>
+                <select id="seqRoot">
+                  <option value="0">C</option>
+                  <option value="1">C#</option>
+                  <option value="2">D</option>
+                  <option value="3">D#</option>
+                  <option value="4">E</option>
+                  <option value="5">F</option>
+                  <option value="6">F#</option>
+                  <option value="7">G</option>
+                  <option value="8">G#</option>
+                  <option value="9">A</option>
+                  <option value="10">A#</option>
+                  <option value="11">B</option>
+                </select>
+              </label>
+              <button class="seq-random" id="seqRandom" type="button">Random</button>
+              <button class="seq-clear" id="seqClear" type="button">Clear</button>
+            </div>
+          </div>
+
+          <div class="seq-xy-row">
+            <div class="xy-pad-compact" id="xyPad" aria-label="XY pad: X controls delay, Y controls filter cutoff, scroll controls Q">
+              <div class="xy-grid"></div>
+              <div class="xy-crosshair x"></div>
+              <div class="xy-crosshair y"></div>
+              <div class="xy-handle" id="xyHandle">
+                <div class="xy-tooltip" id="xyTooltip">
+                  <span>X: Delay + Feedback</span>
+                  <span>Y: Filter Cutoff</span>
+                  <span>Scroll: Resonance (Q)</span>
+                </div>
+              </div>
+            </div>
+            <div class="xy-readout-compact">
+              <div><span>Y Cutoff</span> <strong id="xyCutoffValue">500 Hz</strong></div>
+              <div><span>X Delay</span> <strong id="xyDelayLValue">1 ms</strong></div>
+              <div><span>Scroll Q</span> <strong id="xyQValue">1.00</strong></div>
+            </div>
+          </div>
+
+          <details class="piano-roll-details" open>
+            <summary>
+              Piano Roll
+              <span class="octave-shift">
+                <button class="octave-btn" id="octDown" type="button" title="Shift all notes down 1 octave">-</button>
+                <button class="octave-btn" id="octUp" type="button" title="Shift all notes up 1 octave">+</button>
+              </span>
+            </summary>
+            <div class="sequencer-grid" id="sequencerGrid"></div>
+          </details>
+        </div>
+
+      </section>
+
+      <section class="control-grid" aria-label="synth controls">
+        <div class="control-section">
+          <div class="section-head">
+            <h2>Envelope</h2>
+            <span id="envelopeStatus">ADSR</span>
+          </div>
+          <label class="control-row env-control" data-param="attack">
+            <span>Attack</span>
+            <input id="attack" type="range" min="0.5" max="1000" step="0.5" value="5">
+            <output id="attackValue">5 ms</output>
+          </label>
+          <label class="control-row env-control" data-param="decay">
+            <span>Decay</span>
+            <input id="decay" type="range" min="1" max="5000" step="1" value="1000">
+            <output id="decayValue">1000 ms</output>
+          </label>
+          <label class="control-row env-control" data-param="sustain">
+            <span>Sustain</span>
+            <input id="sustain" type="range" min="0" max="1" step="0.001" value="0.65">
+            <output id="sustainValue">0.65</output>
+          </label>
+          <label class="control-row env-control" data-param="release">
+            <span>Release</span>
+            <input id="release" type="range" min="1" max="10000" step="1" value="400">
+            <output id="releaseValue">400 ms</output>
+          </label>
+        </div>
+
+        <div class="control-section">
+          <div class="section-head">
+            <h2>Filter</h2>
+            <span>lowpass</span>
+          </div>
+          <label class="control-row">
+            <span>Cutoff</span>
+            <input id="filter" type="range" min="100" max="1000" step="1" value="500">
+            <output id="filterValue">500 Hz</output>
+          </label>
+          <label class="control-row">
+            <span>Q</span>
+            <input id="Q" type="range" min="0" max="10" step="0.01" value="1">
+            <output id="QValue">1.00</output>
+          </label>
+        </div>
+
+        <div class="control-section">
+          <div class="section-head">
+            <h2>Stereo Delay</h2>
+          </div>
+          <label class="control-row">
+            <span>Time L</span>
+            <input id="delaytimeL" type="range" min="1" max="2000" step="1" value="1">
+            <output id="delaytimeLValue">1 ms</output>
+          </label>
+          <label class="control-row">
+            <span>Time R</span>
+            <input id="delaytimeR" type="range" min="1" max="2000" step="1" value="1">
+            <output id="delaytimeRValue">1 ms</output>
+          </label>
+          <label class="control-row">
+            <span>FB L</span>
+            <input id="feedbackL" type="range" min="0" max="0.999" step="0.001" value="0.5">
+            <output id="feedbackLValue">0.50</output>
+          </label>
+          <label class="control-row">
+            <span>FB R</span>
+            <input id="feedbackR" type="range" min="0" max="0.999" step="0.001" value="0.5">
+            <output id="feedbackRValue">0.50</output>
+          </label>
+        </div>
+      </section>
+
+      <section class="helper-strip" aria-label="playing hints">
+        <span>Play: A W S E D F T G Y H U J K O L</span>
+        <span>External MIDI: auto-listens when available</span>
+      </section>
+    </main>
+
+    <script src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
+    <script src="app.js?v=20260526-v4"></script>
+  </body>
+</html>
