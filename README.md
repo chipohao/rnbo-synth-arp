@@ -8,7 +8,7 @@ Built by [Po-Hao Chi](https://chipohao.com) / [ZoneSound Creative](https://zones
 
 ### Performance Modes
 - **Keyboard** — screen keyboard + computer key input (A W S E D F T G Y H U J K O L), external MIDI auto-detected
-- **Sequencer** — 16-step piano roll with scale quantization, randomizer, and octave shift
+- **Sequencer** (default) — 16-step piano roll with scale quantization, randomizer, and octave shift
 
 ### Synth Engine (RNBO)
 - **Oscillator** — sine, saw, square, noise waveform selector
@@ -16,11 +16,12 @@ Built by [Po-Hao Chi](https://chipohao.com) / [ZoneSound Creative](https://zones
 - **Filter** — lowpass with cutoff (30–10000 Hz) and resonance (Q)
 - **Stereo Delay** — independent L/R delay time with feedback
 
-### XY Pad (in Sequencer tab)
+### XY Pad (always visible)
 - **X axis** — delay time + feedback depth
 - **Y axis** — filter cutoff
 - **Scroll / trackpad** — filter resonance (Q), visualized as handle size
 - Hover the handle for control hints
+- Available in both Keyboard and Sequencer modes
 
 ### Sequencer
 - 16-step piano roll, C1–C5 range
