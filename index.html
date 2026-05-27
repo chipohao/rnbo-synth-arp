@@ -25,8 +25,8 @@
       <section class="performance-panel" aria-label="performance controls">
         <div class="mode-tabs-row">
           <div class="mode-tabs" role="tablist" aria-label="performance mode">
-            <button class="mode-tab active" id="keyboardTab" type="button" role="tab" aria-selected="true" aria-controls="keyboardMode">Keyboard</button>
-            <button class="mode-tab" id="seqTab" type="button" role="tab" aria-selected="false" aria-controls="sequencerMode">Sequencer</button>
+            <button class="mode-tab" id="keyboardTab" type="button" role="tab" aria-selected="false" aria-controls="keyboardMode">Keyboard</button>
+            <button class="mode-tab active" id="seqTab" type="button" role="tab" aria-selected="true" aria-controls="sequencerMode">Sequencer</button>
           </div>
           <div class="waveform-switch" id="waveformSwitch" aria-label="waveform selector"></div>
           <label class="topbar-gain">
@@ -40,11 +40,31 @@
           <canvas id="scopeCanvas" width="720" height="180" aria-label="audio waveform monitor"></canvas>
         </div>
 
-        <div class="mode-panel active" id="keyboardMode" role="tabpanel" aria-labelledby="keyboardTab">
+        <div class="seq-xy-row">
+          <div class="xy-pad-compact" id="xyPad" aria-label="XY pad: X controls delay, Y controls filter cutoff, scroll controls Q">
+            <div class="xy-grid"></div>
+            <div class="xy-crosshair x"></div>
+            <div class="xy-crosshair y"></div>
+            <div class="xy-handle" id="xyHandle">
+              <div class="xy-tooltip" id="xyTooltip">
+                <span>X: Delay + Feedback</span>
+                <span>Y: Filter Cutoff</span>
+                <span>Scroll: Resonance (Q)</span>
+              </div>
+            </div>
+          </div>
+          <div class="xy-readout-compact">
+            <div><span>Y Cutoff</span> <strong id="xyCutoffValue">500 Hz</strong></div>
+            <div><span>X Delay</span> <strong id="xyDelayLValue">1 ms</strong></div>
+            <div><span>Scroll Q</span> <strong id="xyQValue">1.00</strong></div>
+          </div>
+        </div>
+
+        <div class="mode-panel" id="keyboardMode" role="tabpanel" aria-labelledby="keyboardTab" hidden>
           <div class="keyboard" id="keyboard" aria-label="screen keyboard"></div>
         </div>
 
-        <div class="mode-panel" id="sequencerMode" role="tabpanel" aria-labelledby="seqTab" hidden>
+        <div class="mode-panel active" id="sequencerMode" role="tabpanel" aria-labelledby="seqTab">
           <div class="sequencer-transport">
             <button class="seq-play" id="seqPlay" type="button">Play</button>
             <button class="seq-stop" id="seqStop" type="button" disabled>Stop</button>
@@ -91,26 +111,6 @@
               </label>
               <button class="seq-random" id="seqRandom" type="button">Random</button>
               <button class="seq-clear" id="seqClear" type="button">Clear</button>
-            </div>
-          </div>
-
-          <div class="seq-xy-row">
-            <div class="xy-pad-compact" id="xyPad" aria-label="XY pad: X controls delay, Y controls filter cutoff, scroll controls Q">
-              <div class="xy-grid"></div>
-              <div class="xy-crosshair x"></div>
-              <div class="xy-crosshair y"></div>
-              <div class="xy-handle" id="xyHandle">
-                <div class="xy-tooltip" id="xyTooltip">
-                  <span>X: Delay + Feedback</span>
-                  <span>Y: Filter Cutoff</span>
-                  <span>Scroll: Resonance (Q)</span>
-                </div>
-              </div>
-            </div>
-            <div class="xy-readout-compact">
-              <div><span>Y Cutoff</span> <strong id="xyCutoffValue">500 Hz</strong></div>
-              <div><span>X Delay</span> <strong id="xyDelayLValue">1 ms</strong></div>
-              <div><span>Scroll Q</span> <strong id="xyQValue">1.00</strong></div>
             </div>
           </div>
 

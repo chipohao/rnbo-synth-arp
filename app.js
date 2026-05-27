@@ -374,8 +374,10 @@ function stepDuration() {
 }
 
 async function startSequencer() {
-  await ensureStarted();
   const seq = state.sequencer;
+  if (seq.playing) return;
+  await ensureStarted();
+  if (seq.timerId) clearInterval(seq.timerId);
   seq.playing = true;
   seq.currentStep = -1;
   document.querySelector("#seqPlay").classList.add("playing");
@@ -387,12 +389,17 @@ async function startSequencer() {
 function stopSequencer() {
   const seq = state.sequencer;
   seq.playing = false;
-  clearInterval(seq.timerId);
-  seq.timerId = null;
+  if (seq.timerId) { clearInterval(seq.timerId); seq.timerId = null; }
   if (seq.lastNote !== null) {
     stopNote(seq.lastNote);
     seq.lastNote = null;
   }
+  setParam("feedbackL", 0);
+  setParam("feedbackR", 0);
+  setTimeout(() => {
+    setControlValue("feedbackL", document.querySelector("#feedbackL").value);
+    setControlValue("feedbackR", document.querySelector("#feedbackR").value);
+  }, 300);
   updateStepHighlight();
   seq.currentStep = -1;
   document.querySelector("#seqPlay").classList.remove("playing");
@@ -402,6 +409,7 @@ function stopSequencer() {
 
 function sequencerTick() {
   const seq = state.sequencer;
+  if (!seq.playing) return;
   if (seq.lastNote !== null) {
     stopNote(seq.lastNote);
     seq.lastNote = null;
